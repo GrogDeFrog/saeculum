@@ -1,2 +1,3 @@
-Uhh... shit. This is supposed to be the website for Saeculum. There's no way
-it's going to work though...
+Here's the Saeculum home page!  
+
+Pretty, huh?
