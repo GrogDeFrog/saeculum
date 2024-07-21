@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saeculum</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" sizes="32x32" href="favicon32x.ico">
-  <link rel="icon" type="image/x-icon" sizes="64x64" href="favicon64x.ico">
-  <link rel="icon" type="image/x-icon" sizes="128x128" href="favicon128x.ico">
+  <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon32x.ico">
+  <link rel="icon" type="image/x-icon" sizes="64x64" href="/favicon64x.ico">
+  <link rel="icon" type="image/x-icon" sizes="128x128" href="/favicon128x.ico">
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
   <script src="js/simpleTones.js"></script>
   <script type="module" src="/js/backgroundThrob.js"></script>
@@ -18,9 +18,9 @@
   <div class="main-container">
     <div class="title-container">
       <h1><a class="main-title" href="https://www.saeculum.net">Saeculum</a></h1>
-      <a href="https://www.saeculum.net">
-        <img src="images/thistles.png" alt="Ink drawing of thistles">
-      </a>
+      <!--<a href="https://www.saeculum.net">
+      </a>-->
+      <img src="images/thistles.png" alt="Ink drawing of thistles">
       <p>
         <a href="https://time.saeculum.net">Time</a> ·
         <a href="https://saeculum.net/tones">Tones</a> ·
@@ -30,7 +30,7 @@
       <script src="js/pentatonicTones.js"></script>
     <p>
     <div class="center-button-container">
-      <button onclick="playRandomPentatonicNote()">Start Music!</button>
+      <button id="musicButton" onclick="toggleMusic()">Start Music!</button>
     </div>
     </p>
   </div>
