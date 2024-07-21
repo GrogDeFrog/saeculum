@@ -6,7 +6,6 @@
 }
 
 p {
-    margin-top: 1em;
     padding-bottom: 1em;
 }
 
@@ -40,6 +39,7 @@ h1 {
 img {
     max-width: 100%;
     height: auto;
+    padding-bottom: 1em;
 }
 
 li {
