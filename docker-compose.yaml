@@ -1,41 +1,13 @@
 services:
-  www:
+  frontend:
     restart: unless-stopped
     container_name: www.saeculum.net
     image: nginx:latest
     volumes:
-      - ./www/html:/usr/share/nginx/html/
-      - ./www/nginx.conf:/etc/nginx/nginx.conf
+      - ./www:/usr/share/nginx/www/
+      - ./time:/usr/share/nginx/time/
+      - ./assets:/usr/share/nginx/assets/
+      - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 23888:80
-
-  time:
-    restart: unless-stopped
-    container_name: time.saeculum.net
-    image: nginx:latest
-    volumes:
-      - ./time/html:/usr/share/nginx/html/
-      - ./time/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 23889:80
-
-      #  music:
-      #    restart: unless-stopped
-      #    container_name: time.saeculum.net
-      #    image: nginx:latest
-      #    volumes:
-      #      - ./time/html:/usr/share/nginx/html/
-      #      - ./time/nginx.conf:/etc/nginx/nginx.conf
-      #    ports:
-      #      - 23888:80
-      #
-      #  words:
-      #    restart: unless-stopped
-      #    container_name: saeculum.net
-      #    image: nginx:latest
-      #    volumes:
-      #      - ./html:/usr/share/nginx/html/
-      #      - ./nginx.conf:/etc/nginx/nginx.conf
-      #    ports:
-      #      - 23888:80
-      #
+      - 23888:8080
+      - 23889:9080
