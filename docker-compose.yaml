@@ -4,7 +4,7 @@ services:
     container_name: www.saeculum.net
     image: nginx:latest
     volumes:
-      - ./www/html:/usr/share/nginx/www/html
+      - ./www/html:/usr/share/nginx/www/html/
       - ./assets:/usr/share/nginx/assets/
       - ./www/nginx.conf:/etc/nginx/nginx.conf
     ports:
@@ -15,7 +15,7 @@ services:
     container_name: time.saeculum.net
     image: nginx:latest
     volumes:
-      - ./time/html:/usr/share/nginx/time/html
+      - ./time/html:/usr/share/nginx/time/html/
       - ./assets:/usr/share/nginx/assets/
       - ./time/nginx.conf:/etc/nginx/nginx.conf
     ports:
