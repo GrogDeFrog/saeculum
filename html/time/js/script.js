@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // window.location.href = "/login";
                         // redirect to "http://time.assiduous.one/login"
             // Now, redirects to saeculum instead...
-                        window.location.href = "http://time.saeculum.net/api/login";
+            window.location.href = "http://time.saeculum.net/login";
         });
 
     document.getElementById('end-button').addEventListener('click', function() {

@@ -183,9 +183,12 @@ func setupAPIRoutes() *http.ServeMux {
 	mux.HandleFunc("/signin", handleGoogleLogin)
 
 	// Protected routes
-	mux.Handle("/start", isAuthenticated(http.HandlerFunc(startEntry)))
-	mux.Handle("/end", isAuthenticated(http.HandlerFunc(endEntry)))
-	mux.Handle("/entries", isAuthenticated(http.HandlerFunc(getEntries)))
+	protectedMux.Handle("/start", isAuthenticated(http.HandlerFunc(startEntry)))
+	protectedMux.Handle("/end", isAuthenticated(http.HandlerFunc(endEntry)))
+	protectedMux.Handle("/entries", isAuthenticated(http.HandlerFunc(getEntries)))
+
+	// Combine public and protected routes
+	mux.Handle("/api/", http.StripPrefix("/api", protectedMux))
 
 	return mux
 }
