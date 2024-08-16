@@ -23,6 +23,7 @@
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     z-index: 1;
 }
 
@@ -63,6 +64,9 @@
 
 .task {
     padding: 0.5em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .task:hover {

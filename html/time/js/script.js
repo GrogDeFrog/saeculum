@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });                    
                     if(valid || count === 0){
                         var taskDiv = document.createElement('div');
-                        taskDiv.classList.add('task-box');
+                        taskDiv.classList.add('task');
                         taskDiv.textContent = task.Description;
                         // on tap on the div start the task
                         taskDiv.addEventListener('click', function() {
