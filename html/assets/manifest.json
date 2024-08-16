@@ -1,0 +1,15 @@
+{
+"short_name": "Saeculum",
+  "name": "Saeculum: A time tracker",
+  "display": "standalone",
+  "id": "/?source=pwa",
+  "start_url": "/?source=pwa",
+  "icons": [
+      {
+          "src": "/assets/apple-touch-icon.png",
+          "sizes": "any",
+          "type": "image/png",
+          "purpose": "any"
+      }
+  ]
+}

@@ -9,26 +9,45 @@
     <div class="title-container">
       <h1><a class="main-title" href="http://www.saeculum.net/">Saeculum</a></h1>
     </div>
-    <div class="search-container">
-      <span id="ghost-text">Start typing...</span>
+    <div id="search-container">
+      <span class="ghost-text">Start typing...</span>
       <input type="text" id="search-bar" placeholder="" autofocus>
     </div>
 
     <div class="menu-bar">
-      <div class="left-buttons">
+      <div class="left">
         <button id="start-button">Start</button>
         <button id="end-button">End</button>
       </div>
-      <div class="right-buttons">
+      <div class="center">
+        <script src="js/displayCurrentTask.js"></script>
+        <span id="current-task-name">Start your first task</span>
+        <span id="current-task-duration">00:00:00</span>
+      </div>
+      <div class="right">
         <button id="logout-button">Logout</button>
         <button id="login-button">Login</button>
       </div>
     </div>
-    <div class="Task-Boxes">
-    <div id="common-tasks"></div>
-      <ul id="entry-list"></ul>
+
+    <div id="tasks">
+      <script src="js/displayTasks.js"></script>
+      <div class="task">
+        <li>Lorem Ipsum</li>
+      </div>
     </div>
-    <div id="bottom-bar">
+
+    <div class="menu-bar">
+      <div class="left">
+        <a href="javascript:void(0)" onclick="pageFirst()">&lt;&lt;</a>
+        <a href="javascript:void(0)" onclick="pageBack()">&lt;</a>
+      </div>
+      <div class="center">1</div>
+      <div class="right">
+        <a href="javascript:void(0)" onclick="pageForward()">&gt;</a>
+        <a href="javascript:void(0)" onclick="pageLast()">&gt;&gt;</a>
+      </div>
+    </div>
   </div>
 </body>
 </html>
