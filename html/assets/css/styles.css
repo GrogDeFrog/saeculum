@@ -74,6 +74,7 @@ button {
     padding: 0.5em; 
     color: #000;
     font-size: 100%;
+    z-index: 3;
 }
 
 button:hover {
