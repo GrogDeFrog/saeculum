@@ -10,8 +10,8 @@
       <h1><a class="main-title" href="http://www.saeculum.net/">Saeculum</a></h1>
     </div>
     <div id="search-container">
-      <span class="ghost-text">Start typing...</span>
       <input type="text" id="search-bar" placeholder="" autofocus>
+      <span id="ghost-text">Start typing...</span>
     </div>
 
     <div class="menu-bar">
@@ -20,7 +20,6 @@
         <button id="end-button">End</button>
       </div>
       <div class="center">
-        <script src="js/displayCurrentTask.js"></script>
         <span id="current-task-name">Start your first task</span>
         <span id="current-task-duration">00:00:00</span>
       </div>
@@ -30,11 +29,8 @@
       </div>
     </div>
 
-    <div id="tasks">
-      <script src="js/displayTasks.js"></script>
-      <div class="task">
-        <li>Lorem Ipsum</li>
-      </div>
+    <div id="task-container">
+      <ul id="task-list"></ul>
     </div>
 
     <div class="menu-bar">
@@ -49,6 +45,8 @@
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
 
