@@ -66,7 +66,7 @@ function fetchPreviousEntries() {
                 displayCurrentEntry();
             } else {
                 // Handle the case when there are no entries
-                document.getElementById('current-task-name').textContent = 'No active tasks';
+                document.getElementById('current-task-name').textContent = 'No active task';
                 document.getElementById('current-task-duration').textContent = '';
                 entryList.innerHTML = '<li>No entries found</li>';
             }
@@ -85,7 +85,7 @@ function fetchPreviousEntries() {
 
             
         if (entries.length === 0) {
-            entryList.innerHTML = '<li>No entries available</li>';
+            entryList.innerHTML = '<li>No entries found</li>';
             return;
         }
 
