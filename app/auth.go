@@ -18,8 +18,8 @@ var (
 func init() {
         googleOauthConfig = &oauth2.Config{
                 RedirectURL:  "https://time.saeculum.net/auth",
-                ClientID:     "20294282467-hfbrb8b9gns1g1opn8qhp1n3v4s8f93h.apps.googleusercontent.com", // replace with your client ID
-                ClientSecret: "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", // replace with your client secret
+                ClientID:     "481821566397-tlibo9pip8hob0ne2vk07jmcbsi4kgbc.apps.googleusercontent.com",
+                ClientSecret: "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",
                 Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
                 Endpoint:     google.Endpoint,
         }
