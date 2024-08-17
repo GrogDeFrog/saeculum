@@ -59,12 +59,12 @@ a:hover {
     color: var(--link-color-active, rgb(60, 60, 60));
 }
 
-h1 a.main-title {
+#main-title {
     color: black;
     font-weight: normal;
 }
 
-h1 a.main-title:hover {
+#main-title:hover {
     color: var(--link-color-active, rgb(60, 60, 60));
 }
 
@@ -90,7 +90,8 @@ button:hover {
     padding-top: 0;
     padding-left: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
     padding-right: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
-    padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
+    /*padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);*/
+    padding-bottom: 0;
     background-color: white;
 }
 
