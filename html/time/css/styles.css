@@ -35,6 +35,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     z-index: 1;
+    width: 100%;
 }
 
 #seach-bar:focus {
@@ -67,7 +68,7 @@
 }
 
 #task-container {
-    height: calc(20 * 2em);
+    height: calc(20 * 37);
     overflow-y: auto;
     border: 1px solid #000;
 }
@@ -94,6 +95,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
 }
 
 #entry-list li.highlighted {
@@ -102,6 +108,27 @@
 
 #entry-list li:hover {
     cursor: pointer;
+}
+
+.date, .duration, .description {
+    flex: 1;
+    text-align: left;
+    text-overflow: inherit;
+    overflow: inherit;
+    white-space: inherit;
+}
+
+.date {
+    max-width: 100px;
+    min-width: 100px;
+}
+
+.duration {
+    max-width: 100px;
+    min-width: 100px;
+}
+
+.description {
 }
 
 #bottom-bar {

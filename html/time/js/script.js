@@ -42,11 +42,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatDuration(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const sec = seconds % 60;
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const sec = Math.round((seconds % 60)).toString().padStart(2, '0');
+        return `${hours}:${minutes}:${sec}`;
     }
+
     function fetchPreviousEntries() {
         fetch('/api/entries') // Replace with your actual API endpoint
             .then(response => response.json())
@@ -61,11 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentEntryInterval = setInterval(displayCurrentEntry, 1000);
                     displayCurrentEntry(); // Display current entry on page load
                 }
-                // add all entreis to tasks, that do not already have a Description that is in tasks
+
+                // add all entries that do not already have a description to tasks
                 entries.forEach(entry => {
-                    if (!tasks.find(task => task.Description === entry.Description)) {
-                        tasks.push(entry);
-                    }
+                        if (!tasks.find(task => task.Description === entry.Description)) {
+                            tasks.push(entry);
+                        }
                 });
 
 //                tasks.forEach(task => {
@@ -93,32 +95,74 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     }
 
-    function displayEntries(entries, highlight = false) {
+    function displayEntries(entries) {
         entryList.innerHTML = '';
         entries.forEach((entry, index) => {
+            var dateString = processDateString(entry);
+            var duration = formatDuration(entry.Duration/1000000000);
+
             const li = document.createElement('li');
-            li.textContent = entry.Description + " " + processDateString(entry) + " " + formatDuration(entry.Duration/1000000000);
-            console.log(li);
-            console.log(entry);
+
+            const dateDiv = document.createElement('div');
+            dateDiv.classList.add('date');
+            dateDiv.textContent = dateString;
+
+            const durationDiv = document.createElement('div');
+            durationDiv.classList.add('duration');
+            durationDiv.textContent = duration;
+
+            const descriptionDiv = document.createElement('div');
+            descriptionDiv.classList.add('description');
+            descriptionDiv.textContent = entry.Description;
+
+            li.appendChild(dateDiv);
+            li.appendChild(durationDiv);
+            li.appendChild(descriptionDiv);
+
             li.dataset.index = index;
 
-            /* Mouseover to highlight */
+            // Hide newest task
+            if (dateString === 'current') {
+                li.style.display = 'none';
+            }
+
+            // Mouseover to highlight
             li.addEventListener('mouseover', function() {
                 hoverHighlight(index);
             });
-            li.addEventListener('mouseout', function() {
-                li.classList.remove('highlighted');
+
+            li.addEventListener('click', function() {
+                startEntry(entry.Description);
             });
 
             entryList.appendChild(li);
         });
-        if (highlight && entries.length > 0) {
-            highlightEntry(0);
+        if (entries.length === 0) {
+            return;
         }
+        const searchTerm = searchBar.value;
+        filteredEntries = fuzzySearch(searchTerm,entries);
+        if(searchTerm === ""){
+            filteredEntries = entries;
+        }
+
+        highlightEntry(0);
+        ghostTextUpdate();
+    }
+
+    function toggleVisibility(className) {
+        const elements = document.querySelectorAll(`li .${className}`);
+        elements.forEach(element => {
+            if (element.style.display === 'none') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        });
     }
 
     function highlightEntry(index) {
-        if (highlightedIndex >= 0 && entryList.childNodes[highlightedIndex]) {
+        if (entryList.childNodes[highlightedIndex]) {
             entryList.childNodes[highlightedIndex].classList.remove('highlighted');
         }
         highlightedIndex = index;
@@ -165,14 +209,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function ghostTextUpdate(){
         var userInput = searchBar.value;
         var autoComplete = "";
-        if (filteredEntries != "")
+        if (filteredEntries != "") {
             autoComplete = filteredEntries[highlightedIndex].Description.substring(userInput.length);
+        }
         ghostText.innerHTML = '<span style="color: white;">' + userInput + '</span>' + autoComplete;
     }
 
     function startEntrySearchBar() {
         if (searchBar.value) {
             startEntry(searchBar.value);
+            searchBar.value = ''
         }
     }
 
@@ -205,9 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(searchTerm === ""){
             filteredEntries = entries;
         }
-        displayEntries(filteredEntries, true);
-        ghostTextUpdate();
-        
+        displayEntries(filteredEntries);
     });
 
     searchBar.addEventListener('keydown', function(e) {
@@ -236,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         highlightedIndex = index;
         entryList.childNodes[highlightedIndex].classList.add('highlighted');
+        ghostTextUpdate();
     }
 
     document.getElementById('start-button').addEventListener('click', startEntrySearchBar);
