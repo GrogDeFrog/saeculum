@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var searchBar = document.getElementById('search-bar');
-    var entryList = document.getElementById('task-list');
+    var entryList = document.getElementById('entry-list');
     var ghostText = document.getElementById('ghost-text');
     var filteredEntries = [];
     var tasks = [];
@@ -68,28 +68,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                tasks.forEach(task => {
-                    // for all divs in common-tasks check if there is already a div with the same textContent
-                    var valid = true;
-                    var count = 0;
-                    commonTasksContainer.childNodes.forEach(div => {
-                        count++;
-                        if (div.textContent === task.Description){
-                            valid = false;
-                        }
-                    });                    
-                    if(valid || count === 0){
-                        var taskDiv = document.createElement('div');
-                        taskDiv.classList.add('task');
-                        taskDiv.textContent = task.Description;
-                        // on tap on the div start the task
-                        taskDiv.addEventListener('click', function() {
-                            startEntry(task.Description);
-                        });
-                        commonTasksContainer.appendChild(taskDiv);
-                    }
-
-                });
+//                tasks.forEach(task => {
+//                    // for all divs in common-tasks check if there is already a div with the same textContent
+//                    var valid = true;
+//                    var count = 0;
+//                    commonTasksContainer.childNodes.forEach(div => {
+//                        count++;
+//                        if (div.textContent === task.Description){
+//                            valid = false;
+//                        }
+//                    });                    
+//                    if(valid || count === 0){
+//                        var taskDiv = document.createElement('div');
+//                        taskDiv.classList.add('task');
+//                        taskDiv.textContent = task.Description;
+//                        // on tap on the div start the task
+//                        taskDiv.addEventListener('click', function() {
+//                            startEntry(task.Description);
+//                        });
+//                        commonTasksContainer.appendChild(taskDiv);
+//                    }
+//                });
             })
             .catch(error => console.error('Error:', error));
     }
@@ -157,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function ghostTextUpdate(){
         var userInput = searchBar.value;
         var autoComplete = "";
-        if (fileteredEntries.size() != 0)
+        if (filteredEntries != "")
             autoComplete = filteredEntries[highlightedIndex].Description.substring(userInput.length);
         ghostText.innerHTML = '<span style="color: white;">' + userInput + '</span>' + autoComplete;
     }
