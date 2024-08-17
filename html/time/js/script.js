@@ -49,55 +49,47 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${hours}:${minutes}:${sec}`;
     }
 
-    function fetchPreviousEntries() {
-        fetch('/api/entries') // Replace with your actual API endpoint
-            .then(response => response.json())
-            .then(data => {
-                entries = data;
+function fetchPreviousEntries() {
+    fetch('/api/entries')
+        .then(response => response.json())
+        .then(data => {
+            entries = data;
+
+            if (entries.length > 0) {
                 displayEntries(entries);
                 currentEntry = entries[0];
-                if (currentEntry) {
-                    if (currentEntryInterval) {
-                        clearInterval(currentEntryInterval);
-                    }
-                    currentEntryInterval = setInterval(displayCurrentEntry, 1000);
-                    displayCurrentEntry(); // Display current entry on page load
+
+                if (currentEntryInterval) {
+                    clearInterval(currentEntryInterval);
                 }
+                currentEntryInterval = setInterval(displayCurrentEntry, 1000);
+                displayCurrentEntry();
+            } else {
+                // Handle the case when there are no entries
+                document.getElementById('current-task-name').textContent = 'No active tasks';
+                document.getElementById('current-task-duration').textContent = '';
+                entryList.innerHTML = '<li>No entries found</li>';
+            }
 
-                // add all entries that do not already have a description to tasks
-                entries.forEach(entry => {
-                        if (!tasks.find(task => task.Description === entry.Description)) {
-                            tasks.push(entry);
-                        }
-                });
-
-//                tasks.forEach(task => {
-//                    // for all divs in common-tasks check if there is already a div with the same textContent
-//                    var valid = true;
-//                    var count = 0;
-//                    commonTasksContainer.childNodes.forEach(div => {
-//                        count++;
-//                        if (div.textContent === task.Description){
-//                            valid = false;
-//                        }
-//                    });                    
-//                    if(valid || count === 0){
-//                        var taskDiv = document.createElement('div');
-//                        taskDiv.classList.add('task');
-//                        taskDiv.textContent = task.Description;
-//                        // on tap on the div start the task
-//                        taskDiv.addEventListener('click', function() {
-//                            startEntry(task.Description);
-//                        });
-//                        commonTasksContainer.appendChild(taskDiv);
-//                    }
-//                });
-            })
-            .catch(error => console.error('Error:', error));
-    }
+            entries.forEach(entry => {
+                if (!tasks.find(task => task.Description === entry.Description)) {
+                    tasks.push(entry);
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
 
     function displayEntries(entries) {
         entryList.innerHTML = '';
+
+            
+        if (entries.length === 0) {
+            entryList.innerHTML = '<li>No entries available</li>';
+            return;
+        }
+
+
         [entries[0], ...entries.slice(numEntries * page + 1, numEntries * (page + 1) + 1)].forEach((entry, index) => {
             var dateString = processDateString(entry);
             var duration = formatDuration(entry.Duration/1000000000);
