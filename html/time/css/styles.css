@@ -1,3 +1,10 @@
+@media (max-width: 800px) {
+    .date,
+    .duration {
+        display: none;
+    }
+}
+
 #search-outline {
     width: 100%;
     position: relative;
@@ -68,7 +75,7 @@
 }
 
 #task-container {
-    height: calc(20 * 37);
+    height: calc(20 * 37px + 2px);
     overflow-y: auto;
     border: 1px solid #000;
 }

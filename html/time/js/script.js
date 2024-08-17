@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const numEntries = 20;
+    var page = 0;
     var searchBar = document.getElementById('search-bar');
     var entryList = document.getElementById('entry-list');
     var ghostText = document.getElementById('ghost-text');
@@ -22,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function processDateString(data) {
-        console.log(data);
         const endTime = data.EndTime;
         if (endTime === '0001-01-01T00:00:00Z') {
             return 'current';
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function displayEntries(entries) {
         entryList.innerHTML = '';
-        entries.forEach((entry, index) => {
+        [entries[0], ...entries.slice(numEntries * page + 1, numEntries * (page + 1) + 1)].forEach((entry, index) => {
             var dateString = processDateString(entry);
             var duration = formatDuration(entry.Duration/1000000000);
 
@@ -162,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function highlightEntry(index) {
+        if (index > numEntries)
+            index = numEntries;
+
         if (entryList.childNodes[highlightedIndex]) {
             entryList.childNodes[highlightedIndex].classList.remove('highlighted');
         }
@@ -218,11 +222,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function startEntrySearchBar() {
         if (searchBar.value) {
             startEntry(searchBar.value);
-            searchBar.value = ''
         }
     }
 
     function startEntry(value) {
+        searchBar.value = '';
+        pageFirst();
+
         const url = "/api/start";
         var data = { "Description": value };
         fetch(url, {
@@ -254,7 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
         displayEntries(filteredEntries);
     });
 
-    searchBar.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function(e) {
+        searchBar.focus();
         if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
             e.preventDefault();
             updateHighlight(e.key === 'ArrowUp' ? 'up' : 'down');
@@ -275,12 +282,49 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function hoverHighlight(index) {
+        if (index >= numEntries)
+            index = numEntries;
+
         if (entryList.childNodes[highlightedIndex]) {
             entryList.childNodes[highlightedIndex].classList.remove('highlighted');
         }
         highlightedIndex = index;
         entryList.childNodes[highlightedIndex].classList.add('highlighted');
         ghostTextUpdate();
+    }
+
+    function pageFirst() {
+        page = 0;
+        document.getElementById('pageNumber').textContent = page + 1;
+        displayEntries(entries);
+    }
+
+    function pageBack() {
+        page--;
+
+        if (page < 0)
+            page = 0;
+
+        document.getElementById('pageNumber').textContent = page + 1;
+
+        displayEntries(entries);
+    }
+
+    function pageForward() {
+        page++
+
+        if (page > Math.floor((entries.length) / numEntries))
+            page = Math.floor((entries.length) / numEntries);
+
+        document.getElementById('pageNumber').textContent = page + 1;
+
+        displayEntries(entries);
+    }
+
+    function pageLast() {
+        page = Math.floor(entries.length / numEntries);
+        document.getElementById('pageNumber').textContent = page + 1;
+        displayEntries(entries);
     }
 
     document.getElementById('start-button').addEventListener('click', startEntrySearchBar);
@@ -296,6 +340,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error:', error));
     });
+    document.getElementById('<<').addEventListener('click', pageFirst);
+    document.getElementById('<').addEventListener('click', pageBack);
+    document.getElementById('>').addEventListener('click', pageForward);
+    document.getElementById('>>').addEventListener('click', pageLast);
 
     searchBar.focus();
     fetchPreviousEntries();
