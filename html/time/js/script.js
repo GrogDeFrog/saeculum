@@ -101,6 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(li);
             console.log(entry);
             li.dataset.index = index;
+
+            /* Mouseover to highlight */
+            li.addEventListener('mouseover', function() {
+                hoverHighlight(index);
+            });
+            li.addEventListener('mouseout', function() {
+                li.classList.remove('highlighted');
+            });
+
             entryList.appendChild(li);
         });
         if (highlight && entries.length > 0) {
@@ -220,6 +229,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         ghostTextUpdate();
     });
+
+    function hoverHighlight(index) {
+        if (entryList.childNodes[highlightedIndex]) {
+            entryList.childNodes[highlightedIndex].classList.remove('highlighted');
+        }
+        highlightedIndex = index;
+        entryList.childNodes[highlightedIndex].classList.add('highlighted');
+    }
 
     document.getElementById('start-button').addEventListener('click', startEntrySearchBar);
     document.getElementById('login-button').addEventListener('click', function () {
