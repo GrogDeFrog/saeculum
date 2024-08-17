@@ -1,13 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Add handler...");
-        var searchBar = document.getElementById('search-bar');
-        var entryList = document.getElementById('task-list');
-        var ghostText = document.getElementById('ghost-text');
-        var filteredEntries = [];
-        var tasks = [];
-        var commonTasksContainer = document.getElementById('task-container');
-        let entries = [];
-        let highlightedIndex = -1;
+    var searchBar = document.getElementById('search-bar');
+    var entryList = document.getElementById('task-list');
+    var ghostText = document.getElementById('ghost-text');
+    var filteredEntries = [];
+    var tasks = [];
+    var commonTasksContainer = document.getElementById('task-container');
+    let entries = [];
+    let highlightedIndex = -1;
 
     searchBar.value = "";
     var currentEntry = null;
@@ -20,30 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-task-duration').textContent = formatDuration(elapsedTime);
         }
 
-    }
-    function levenshteinDistance(a, b) {
-        const matrix = [];
-
-        // Initialize the matrix
-        for (let i = 0; i <= b.length; i++) {
-            matrix[i] = [i];
-        }
-        for (let j = 0; j <= a.length; j++) {
-            matrix[0][j] = j;
-        }
-
-        // Populate the rest of the matrix
-        for (let i = 1; i <= b.length; i++) {
-            for (let j = 1; j <= a.length; j++) {
-                if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                    matrix[i][j] = matrix[i - 1][j - 1];
-                } else {
-                    matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-                }
-            }
-        }
-
-        return matrix[b.length][a.length];
     }
 
     function processDateString(data) {
@@ -181,8 +156,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function ghostTextUpdate(){
         var userInput = searchBar.value;
-        ghostText.innerHTML = '<span style="color: white;">' + userInput + '</span>'
-            + filteredEntries[highlightedIndex].Description.substring(userInput.length);
+        var autoComplete = "";
+        if (fileteredEntries.size() != 0)
+            autoComplete = filteredEntries[highlightedIndex].Description.substring(userInput.length);
+        ghostText.innerHTML = '<span style="color: white;">' + userInput + '</span>' + autoComplete;
     }
 
     function startEntrySearchBar() {
