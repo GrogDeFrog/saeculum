@@ -181,8 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function ghostTextUpdate(){
         var userInput = searchBar.value;
-        ghostText.textContent = '_'.repeat(userInput.length) +filteredEntries[highlightedIndex].Description.substring(userInput.length);
-    
+        ghostText.innerHTML = '<span style="color: white;">' + userInput + '</span>'
+            + filteredEntries[highlightedIndex].Description.substring(userInput.length);
     }
 
     function startEntrySearchBar() {

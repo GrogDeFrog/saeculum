@@ -87,7 +87,10 @@ button:hover {
     max-width: 800px;
     min-height: 100vh;
     margin: 0 auto;
-    padding: 0 clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
+    padding-top: 0;
+    padding-left: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
+    padding-right: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
+    padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
     background-color: white;
 }
 
