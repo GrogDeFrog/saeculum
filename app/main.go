@@ -7,9 +7,9 @@ import (
 func main() {
 	fmt.Println("Starting web server...")
 	mux := setupAPIRoutes()
-    err := deleteAllZeroIDEntriesForUser("108049832511743894824")
+    err := relabelEntries()
     if (err != nil) {
-        fmt.Print(err);
+        fmt.Println("Error: ", err)
     }
 	http.ListenAndServe(":23889", mux)
 }

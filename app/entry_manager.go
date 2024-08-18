@@ -11,12 +11,17 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
         entry.StartTime = time.Now()
         // set the end time to zero time
         entry.EndTime = time.Time{} // zero time
-        entry.ID = fmt.Sprintf("%d", time.Now().UnixNano())
         entry.UserID = userID
         fmt.Println("Starting task with id ", entry.ID)
 
         // Create the new time entry in the database
         db := initDB()
+
+        // TODO: Make this O(1) lol
+        var maxID uint
+        db.Table("time_entries").Select("COALESCE(MAX(id), 0)").Scan(&maxID)
+        entry.ID = uint(maxID + 1);
+
         // Find the user in the LastEntry table
         var lastEntry LastEntry
         lastEntry.UserID = userID
@@ -25,6 +30,7 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
         if result.Error != nil {
                 return entry, result.Error
         }
+
         // If the user has a last entry, set the end time for the entry
         if lastEntry.TimeEntryID != "0" {
                 var lastTimeEntry TimeEntry
@@ -46,7 +52,6 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
                 return entry, result_create.Error
         }
 
-
         lastEntry.TimeEntryID = entry.ID
         lastEntry.UserID = userID
         result = db.Save(&lastEntry)
@@ -54,7 +59,6 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
                 return entry, result.Error
         }
 
-        // Return the created entry
         return entry, nil
 }
 
@@ -84,8 +88,8 @@ func endEntryForUser (entry TimeEntry, userID string) (TimeEntry, error) {
         return timeEntry, nil
 }
 
-func deleteEntryForUser(entryID string, userID string) error {
-        if entryID == "0" {
+func deleteEntryForUser(entryID uint, userID string) error {
+        if entryID == 0 {
             return errors.New("invalid entry ID: cannot be 0")
         }
         db := initDB()
@@ -112,7 +116,27 @@ func getEntriesForUser(userID string) ([]TimeEntry, error) {
 }
 
 func deleteAllZeroIDEntriesForUser(userID string) error {
-    db := initDB()
-    result := db.Where("id = ? AND user_id = ?", 0, userID).Delete(&TimeEntry{})
-    return result.Error
+        db := initDB()
+        result := db.Where("id = ? AND user_id = ?", 0, userID).Delete(&TimeEntry{})
+        return result.Error
+}
+
+func relabelEntries() error {
+        db := initDB()
+        var entries []TimeEntry
+        if err := db.Order("id").Find(&entries).Error; err != nil {
+                return err
+        }
+
+        for i, entry := range entries {
+                newID := uint(i + 1)
+                if entry.ID != newID {
+                        entry.ID = newID
+                        if err := db.Save(&entry).Error; err != nil {
+                                return err
+                        }
+                }
+        }
+
+        return nil
 }

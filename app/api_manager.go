@@ -62,7 +62,7 @@ func startEntry(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        fmt.Printf("User with ID %s started entry \"%s\"\n", userID, entry.Description)
+        fmt.Printf("User with ID %s started entry \"%d\"\n", userID, entry.Description)
 
         // Return the created entry
         w.Header().Set("Content-Type", "application/json")
@@ -121,7 +121,7 @@ func deleteEntry(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        fmt.Printf("User with ID %s deleted entry with ID \"%s\"\n", userID, entry.ID)
+        fmt.Printf("User with ID %s deleted entry with ID \"%d\"\n", userID, entry.ID)
 
         // Return the created entry
         //w.Header().Set("Content-Type", "application/json")
