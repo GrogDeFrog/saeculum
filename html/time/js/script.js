@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (entries.length > 0) {
                     displayEntries(entries);
                     currentEntry = entries[0];
+                    console.log(entries[0].ID);
     
                     if (currentEntryInterval) {
                         clearInterval(currentEntryInterval);

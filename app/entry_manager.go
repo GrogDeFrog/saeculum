@@ -17,6 +17,14 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
         // Create the new time entry in the database
         db := initDB()
 
+// debug...
+var ids []int
+db.Table("time_entries").Pluck("id", &ids)
+
+for _, id := range ids {
+    fmt.Println(id)
+}
+
         // TODO: Make this O(1) lol
         var maxID uint
         db.Table("time_entries").Select("COALESCE(MAX(id), 0)").Scan(&maxID)
@@ -32,7 +40,7 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
         }
 
         // If the user has a last entry, set the end time for the entry
-        if lastEntry.TimeEntryID != "0" {
+        if lastEntry.TimeEntryID != 0 {
                 var lastTimeEntry TimeEntry
                 result3 := db.Where("id = ?", lastEntry.TimeEntryID).First(&lastTimeEntry)
                 if result3.Error != nil {
