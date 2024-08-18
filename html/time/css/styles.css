@@ -138,6 +138,15 @@
 .description {
 }
 
+.delete-button {
+    margin-left: auto;
+    max-width: 1em;
+    min-width: 1em;
+    z-index:2;
+    text-align: center;
+    background: transparent;
+}
+
 #bottom-bar {
     padding: 0.5em;
 }

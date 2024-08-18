@@ -51,7 +51,6 @@ func startEntry(w http.ResponseWriter, r *http.Request) {
         // get the user ID from the session
         session, _ := store.Get(r, "session-name")
         userID, ok := session.Values["userID"].(string)
-        fmt.Printf("User with ID %s started task %s\n", userID, entry)
         if !ok || userID == "" {
                 http.Error(w, "Unauthorized", http.StatusUnauthorized)
                 return
@@ -62,6 +61,8 @@ func startEntry(w http.ResponseWriter, r *http.Request) {
                 http.Error(w, err.Error(), http.StatusBadRequest)
                 return
         }
+
+        fmt.Printf("User with ID %s started entry \"%s\"\n", userID, entry.Description)
 
         // Return the created entry
         w.Header().Set("Content-Type", "application/json")
@@ -94,6 +95,37 @@ func endEntry(w http.ResponseWriter, r *http.Request) {
         // Return the created entry
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(endEntry)
+}
+
+func deleteEntry(w http.ResponseWriter, r *http.Request) {
+        // Implement the logic for deleting a task
+        // Parse the request JSON
+        var entry TimeEntry
+        if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+                http.Error(w, err.Error(), http.StatusBadRequest)
+                return
+        }
+
+        // get the user ID from the session
+        session, _ := store.Get(r, "session-name")
+        userID, ok := session.Values["userID"].(string)
+        if !ok || userID == "" {
+                http.Error(w, "Unauthorized", http.StatusUnauthorized)
+                return
+        }
+
+        err := deleteEntryForUser(entry, userID)
+        if err != nil {
+                fmt.Println("Error: ", err);
+                http.Error(w, err.Error(), http.StatusBadRequest)
+                return
+        }
+
+        fmt.Printf("User with ID %s deleted entry with ID \"%s\"\n", userID, entry.ID)
+
+        // Return the created entry
+        //w.Header().Set("Content-Type", "application/json")
+        //json.NewEncoder(w).Encode(success)
 }
 
 func getEntries(w http.ResponseWriter, r *http.Request) {
@@ -186,6 +218,7 @@ func setupAPIRoutes() *http.ServeMux {
 	protectedMux := http.NewServeMux()
 	protectedMux.Handle("/start", isAuthenticated(http.HandlerFunc(startEntry)))
 	protectedMux.Handle("/end", isAuthenticated(http.HandlerFunc(endEntry)))
+	protectedMux.Handle("/delete", isAuthenticated(http.HandlerFunc(deleteEntry)))
 	protectedMux.Handle("/entries", isAuthenticated(http.HandlerFunc(getEntries)))
 
 	// Combine public and protected routes

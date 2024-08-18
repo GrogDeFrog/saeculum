@@ -67,7 +67,7 @@ func endEntryForUser (entry TimeEntry, userID string) (TimeEntry, error) {
 
         // check if the entry is already ended
         if !timeEntry.EndTime.IsZero() {
-                return entry, fmt.Errorf("the entry is already ended")
+                return entry, fmt.Errorf("the entry has already ended")
         }
 
         // Set the end time for the entry
@@ -80,7 +80,43 @@ func endEntryForUser (entry TimeEntry, userID string) (TimeEntry, error) {
         }
         // Return the created entry
         return timeEntry, nil
+}
 
+func deleteEntryForUser (entry TimeEntry, userID string) (error) {
+        // find the entry in the database
+        db := initDB()
+
+        var timeEntry TimeEntry
+        timeEntry.ID = entry.ID
+        //timeEntry.UserID = userID
+        //result := db.Where("id = ? AND user_id = ?", entry.ID, userID).First(&timeEntry)
+        fmt.Println("id: ", entry.ID);
+        result := db.Where("id = ?", entry.ID).First(&timeEntry)
+        fmt.Println("id: ", entry.ID);
+
+        if result.Error != nil {
+                fmt.Println("Error in location!");
+                return result.Error
+        }
+        
+        result = db.Delete(&timeEntry)
+        if result.Error != nil {
+            fmt.Println("Error in deletion!");
+            return result.Error
+        }
+                var lastTimeEntry TimeEntry
+                result3 := db.Where("id = ?", lastEntry.TimeEntryID).First(&lastTimeEntry)
+                if result3.Error != nil {
+                        return entry, result3.Error
+                }
+                lastTimeEntry.EndTime = time.Now()
+                lastTimeEntry.Duration = lastTimeEntry.EndTime.Sub(lastTimeEntry.StartTime)
+                // update the the database 
+                // change result to save
+                result2 := db.Save(&lastTimeEntry)
+                if result2.Error != nil { return entry, result2.Error }
+
+        return nil
 }
 
 func getEntriesForUser(userID string) ([]TimeEntry, error) {

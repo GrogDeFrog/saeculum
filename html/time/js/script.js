@@ -49,46 +49,49 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${hours}:${minutes}:${sec}`;
     }
 
-function fetchPreviousEntries() {
-    fetch('/api/entries')
-        .then(response => response.json())
-        .then(data => {
-            entries = data;
-
-            if (entries.length > 0) {
-                displayEntries(entries);
-                currentEntry = entries[0];
-
-                if (currentEntryInterval) {
-                    clearInterval(currentEntryInterval);
+    function fetchPreviousEntries() {
+        fetch('/api/entries')
+            .then(response => response.json())
+            .then(data => {
+                entries = data;
+    
+                if (entries.length > 0) {
+                    displayEntries(entries);
+                    currentEntry = entries[0];
+                    for (let key in entries[0]) {
+                      if (entries[0].hasOwnProperty(key)) {
+                        console.log(key + ": " + entries[0][key]);
+                      }
+                    }
+    
+                    if (currentEntryInterval) {
+                        clearInterval(currentEntryInterval);
+                    }
+                    currentEntryInterval = setInterval(displayCurrentEntry, 1000);
+                    displayCurrentEntry();
+                } else {
+                    // Handle the case when there are no entries
+                    document.getElementById('current-task-name').textContent = 'No active task';
+                    document.getElementById('current-task-duration').textContent = '';
+                    entryList.innerHTML = '<li>No entries found</li>';
                 }
-                currentEntryInterval = setInterval(displayCurrentEntry, 1000);
-                displayCurrentEntry();
-            } else {
-                // Handle the case when there are no entries
-                document.getElementById('current-task-name').textContent = 'No active task';
-                document.getElementById('current-task-duration').textContent = '';
-                entryList.innerHTML = '<li>No entries found</li>';
-            }
-
-            entries.forEach(entry => {
-                if (!tasks.find(task => task.Description === entry.Description)) {
-                    tasks.push(entry);
-                }
-            });
-        })
-        .catch(error => console.error('Error:', error));
-}
+    
+                entries.forEach(entry => {
+                    if (!tasks.find(task => task.Description === entry.Description)) {
+                        tasks.push(entry);
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
     function displayEntries(entries) {
         entryList.innerHTML = '';
 
-            
         if (entries.length === 0) {
             entryList.innerHTML = '<li>No entries found</li>';
             return;
         }
-
 
         [entries[0], ...entries.slice(numEntries * page + 1, numEntries * (page + 1) + 1)].forEach((entry, index) => {
             var dateString = processDateString(entry);
@@ -108,9 +111,14 @@ function fetchPreviousEntries() {
             descriptionDiv.classList.add('description');
             descriptionDiv.textContent = entry.Description;
 
+            const deleteButton = document.createElement('div');
+            deleteButton.classList.add('delete-button');
+            deleteButton.textContent = '×';
+
             li.appendChild(dateDiv);
             li.appendChild(durationDiv);
             li.appendChild(descriptionDiv);
+            li.appendChild(deleteButton);
 
             li.dataset.index = index;
 
@@ -124,8 +132,14 @@ function fetchPreviousEntries() {
                 hoverHighlight(index);
             });
 
-            li.addEventListener('click', function() {
-                startEntry(entry.Description);
+            li.addEventListener('click', function(event) {
+                if (event.target.classList.contains("delete-button")) {
+                    console.log("deleting entry...");
+                    deleteEntry(entry);
+                } else if (event.target.closest("li")) {
+                    console.log("starting new entry...");
+                    startEntry(entry.Description());
+                }
             });
 
             entryList.appendChild(li);
@@ -239,6 +253,24 @@ function fetchPreviousEntries() {
                 }
                 currentEntryInterval = setInterval(displayCurrentEntry, 1000);
                 fetchPreviousEntries(); // Refresh the entries list
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function deleteEntry(entry) {
+        console.log(`Deleting entry with ID ${entry.ID}`);
+        const url = '/api/delete';
+        var data = { "ID": entry.ID };
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                fetchPreviousEntries();
             })
             .catch(error => console.error('Error:', error));
     }
