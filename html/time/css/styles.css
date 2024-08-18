@@ -138,13 +138,18 @@
 .description {
 }
 
-.delete-button {
+#entry-list li .delete-button {
+    display: none;
     margin-left: auto;
     max-width: 1em;
     min-width: 1em;
-    z-index:2;
+    z-index: 2;
     text-align: center;
     background: transparent;
+}
+
+#entry-list li:hover .delete-button {
+    display: inline-block;
 }
 
 #bottom-bar {

@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "time"
+    "errors"
 )
 
 func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
@@ -10,8 +11,9 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
         entry.StartTime = time.Now()
         // set the end time to zero time
         entry.EndTime = time.Time{} // zero time
-        entry.ID = uint(time.Now().UnixNano())
+        entry.ID = fmt.Sprintf("%d", time.Now().UnixNano())
         entry.UserID = userID
+        fmt.Println("Starting task with id ", entry.ID)
 
         // Create the new time entry in the database
         db := initDB()
@@ -24,7 +26,7 @@ func startEntryForUser(entry TimeEntry, userID string) (TimeEntry, error) {
                 return entry, result.Error
         }
         // If the user has a last entry, set the end time for the entry
-        if lastEntry.TimeEntryID != 0 {
+        if lastEntry.TimeEntryID != "0" {
                 var lastTimeEntry TimeEntry
                 result3 := db.Where("id = ?", lastEntry.TimeEntryID).First(&lastTimeEntry)
                 if result3.Error != nil {
@@ -82,39 +84,17 @@ func endEntryForUser (entry TimeEntry, userID string) (TimeEntry, error) {
         return timeEntry, nil
 }
 
-func deleteEntryForUser (entry TimeEntry, userID string) (error) {
-        // find the entry in the database
+func deleteEntryForUser(entryID string, userID string) error {
+        if entryID == "0" {
+            return errors.New("invalid entry ID: cannot be 0")
+        }
         db := initDB()
 
-        var timeEntry TimeEntry
-        timeEntry.ID = entry.ID
-        //timeEntry.UserID = userID
-        //result := db.Where("id = ? AND user_id = ?", entry.ID, userID).First(&timeEntry)
-        fmt.Println("id: ", entry.ID);
-        result := db.Where("id = ?", entry.ID).First(&timeEntry)
-        fmt.Println("id: ", entry.ID);
-
+        // Find the time entry by ID and user ID
+        result := db.Where("id = ? AND user_id = ?", entryID, userID).Delete(&TimeEntry{})
         if result.Error != nil {
-                fmt.Println("Error in location!");
                 return result.Error
         }
-        
-        result = db.Delete(&timeEntry)
-        if result.Error != nil {
-            fmt.Println("Error in deletion!");
-            return result.Error
-        }
-                var lastTimeEntry TimeEntry
-                result3 := db.Where("id = ?", lastEntry.TimeEntryID).First(&lastTimeEntry)
-                if result3.Error != nil {
-                        return entry, result3.Error
-                }
-                lastTimeEntry.EndTime = time.Now()
-                lastTimeEntry.Duration = lastTimeEntry.EndTime.Sub(lastTimeEntry.StartTime)
-                // update the the database 
-                // change result to save
-                result2 := db.Save(&lastTimeEntry)
-                if result2.Error != nil { return entry, result2.Error }
 
         return nil
 }
@@ -129,4 +109,10 @@ func getEntriesForUser(userID string) ([]TimeEntry, error) {
         }
         // Return the created entry
         return entries, nil
+}
+
+func deleteAllZeroIDEntriesForUser(userID string) error {
+    db := initDB()
+    result := db.Where("id = ? AND user_id = ?", 0, userID).Delete(&TimeEntry{})
+    return result.Error
 }

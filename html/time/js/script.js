@@ -54,15 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 entries = data;
-    
+
                 if (entries.length > 0) {
                     displayEntries(entries);
                     currentEntry = entries[0];
-                    for (let key in entries[0]) {
-                      if (entries[0].hasOwnProperty(key)) {
-                        console.log(key + ": " + entries[0][key]);
-                      }
-                    }
     
                     if (currentEntryInterval) {
                         clearInterval(currentEntryInterval);
@@ -138,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     deleteEntry(entry);
                 } else if (event.target.closest("li")) {
                     console.log("starting new entry...");
-                    startEntry(entry.Description());
+                    startEntry(entry.Description);
                 }
             });
 
@@ -228,11 +223,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function startEntrySearchBar() {
         if (searchBar.value) {
             startEntry(searchBar.value);
+            searchBar.value = '';
         }
     }
 
     function startEntry(value) {
-        searchBar.value = '';
         pageFirst();
 
         const url = "/api/start";
@@ -246,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
             .then(response => response.json())
             .then(data => {
+                console.log('Raw data:', data);
                 currentEntry = data; // assuming 'data' contains the started entry
                 displayCurrentEntry();
                 if (currentEntryInterval) {
@@ -268,8 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
                 fetchPreviousEntries();
             })
             .catch(error => console.error('Error:', error));

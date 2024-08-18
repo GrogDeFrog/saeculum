@@ -18,12 +18,12 @@ type User struct {
 type LastEntry struct {
         gorm.Model
         UserID      string
-        TimeEntryID uint
+        TimeEntryID string
 }
 
 type TimeEntry struct {
         gorm.Model
-        ID uint
+        ID          string
         Description string
         StartTime   time.Time
         EndTime     time.Time

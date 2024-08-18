@@ -114,7 +114,7 @@ func deleteEntry(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        err := deleteEntryForUser(entry, userID)
+        err := deleteEntryForUser(entry.ID, userID)
         if err != nil {
                 fmt.Println("Error: ", err);
                 http.Error(w, err.Error(), http.StatusBadRequest)
