@@ -44,6 +44,8 @@ img {
 
 li {
     list-style-type: circle;
+    list-style-position: inside;
+    padding-left: 1em;
 }
 
 span, a {
