@@ -1,4 +1,4 @@
-module time.saeculum.net/time-api
+module time-api
 
 go 1.23.0
 

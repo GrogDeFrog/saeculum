@@ -11,7 +11,7 @@ services:
 
   backend:
     container_name: time-api
-    image: golang:1.22-alpine
+    image: golang:1.23-alpine
     restart: unless-stopped
     working_dir: /app
     command: go run ./cmd/server
