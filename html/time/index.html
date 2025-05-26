@@ -9,6 +9,7 @@
     <div class="title-container">
       <h1><a id="main-title" href="http://www.saeculum.net/">Saeculum</a></h1>
     </div>
+
     <div id="search-outline">
       <div id="search-container">
         <input type="text" id="search-bar" placeholder="" autofocus>
@@ -19,14 +20,14 @@
     <div class="menu-bar">
       <div class="left">
         <button id="start-button">Start</button>
-        <button id="end-button" onclick="alert('Not implemented :(')">End</button>
+        <button id="end-button">End</button>
       </div>
       <div class="center">
         <span id="current-task-name">No active task</span>
         <span id="current-task-duration"></span>
       </div>
       <div class="right">
-        <button id="logout-button" onclick="alert('Not implemented :(')">Logout</button>
+        <button id="logout-button">Logout</button>
         <button id="login-button">Login</button>
       </div>
     </div>
@@ -37,18 +38,16 @@
 
     <div class="menu-bar" id="bottom-bar">
       <div class="left">
-        <a href="javascript:void(0)" id="<<">&lt;&lt;</a>
-        <a href="javascript:void(0)" id="<">&lt;</a>
+        <a href="javascript:void(0)" id="page-first">&laquo;&emsp;</a>
+        <a href="javascript:void(0)" id="page-back">&lsaquo;</a>
       </div>
       <div class="center" id="pageNumber">1</div>
       <div class="right">
-        <a href="javascript:void(0)" id=">">&gt;</a>
-        <a href="javascript:void(0)" id=">>">&gt;&gt;</a>
+        <a href="javascript:void(0)" id="page-forward">&rsaquo;&emsp;</a>
+        <a href="javascript:void(0)" id="page-last">&raquo;</a>
       </div>
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

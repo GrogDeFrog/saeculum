@@ -1,4 +1,4 @@
-import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@6.6.2';
+import Fuse from './vendor/fuse.js';
 import { dom }   from './dom.js';
 import { store } from './store.js';
 
@@ -35,4 +35,3 @@ export function ensureElementInView(elem) {
     else if (elRect.bottom > listRect.bottom)
         dom.entryList.scrollTop += elRect.bottom - listRect.bottom;
 }
-
