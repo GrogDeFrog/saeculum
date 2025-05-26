@@ -22,6 +22,12 @@ h1 {
     transition: padding 0.3s ease, font-size 0.3s ease;
 }
 
+h2 {
+    font-weight: normal;
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
+
 @media (max-width: 600px) {
     h1 {
         padding: 0.5em 0;
