@@ -1,50 +1,52 @@
-// models.go 
+// models.go
 package main
 
 import (
-        "gorm.io/driver/sqlite"
-        "gorm.io/gorm"
-        "time"
-//        "fmt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"time"
+	// "fmt"
 )
+
 type User struct {
-        gorm.Model
-        ID             string `json:"id"`
-        Email          string `json:"email"`
-        VerifiedEmail  bool   `json:"verified_email"`
-        Picture        string `json:"picture"`
+	gorm.Model
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Picture       string `json:"picture"`
 }
 
 type LastEntry struct {
-        gorm.Model
-        UserID      string
-        TimeEntryID string
+	gorm.Model
+	UserID      string
+	TimeEntryID string
 }
 
 type TimeEntry struct {
-        gorm.Model
-        ID          string
-        Description string
-        StartTime   time.Time
-        EndTime     time.Time
-        Duration    time.Duration
-        ProjectID   *uint
-        CategoryID  *uint
-        UserID      string
+	gorm.Model
+	ID          string
+	Description string
+	StartTime   time.Time
+	EndTime     time.Time
+	Duration    time.Duration
+	ProjectID   *uint
+	CategoryID  *uint
+	UserID      string
 }
 
 type Project struct {
-        gorm.Model
-        ProjectName       string
-        AdditionalDetails string
+	gorm.Model
+	ProjectName       string
+	AdditionalDetails string
 }
 
 type Category struct {
-        gorm.Model
-        CategoryName string
+	gorm.Model
+	CategoryName string
 }
+
 func initDB() *gorm.DB {
-//	fmt.Println("initDB() called")
+	//	fmt.Println("initDB() called")
 	// SQLite database connection
 	db, err := gorm.Open(sqlite.Open("timetracker.db"), &gorm.Config{})
 	if err != nil {
@@ -58,5 +60,3 @@ func initDB() *gorm.DB {
 
 	return db
 }
-
-

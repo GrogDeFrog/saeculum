@@ -1,170 +1,169 @@
-//api_manager.go
+// api_manager.go
 package main
 
 import (
-        "github.com/gorilla/sessions"
-        "net/url"
-        "net/http"
-        "encoding/json"
-        "path/filepath"
-        "io"
-        "fmt"
-        //"time"
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/sessions"
+	"io"
+	"net/http"
+	"net/url"
+	"path/filepath"
+	//"time"
 )
 
 var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
 func init() {
-        // Initialize session store configuration if needed
+	// Initialize session store configuration if needed
 }
 
-func storeGoogleUserInfo(content User, w http.ResponseWriter, r *http.Request){
-        session, _ := store.Get(r, "session-name")
-        session.Values["userID"] = content.ID
-        session.Save(r, w)
-     //   fmt.Fprintf(w, "ID: %s", content.ID)
+func storeGoogleUserInfo(content User, w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	session.Values["userID"] = content.ID
+	session.Save(r, w)
+	//   fmt.Fprintf(w, "ID: %s", content.ID)
 }
 
 func isAuthenticated(next http.Handler) http.Handler {
-        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-                session, _ := store.Get(r, "session-name")
-                userID, ok := session.Values["userID"].(string)
-                if !ok || userID == "" {
-                        http.Error(w, "Unauthorized", http.StatusUnauthorized)
-                        return
-                }
-                // Continue to the protected route
-                next.ServeHTTP(w, r)
-        })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, _ := store.Get(r, "session-name")
+		userID, ok := session.Values["userID"].(string)
+		if !ok || userID == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		// Continue to the protected route
+		next.ServeHTTP(w, r)
+	})
 }
 
-
 func startEntry(w http.ResponseWriter, r *http.Request) {
-        // Implement the logic for starting a task
-        // Parse the request JSON
-        var entry TimeEntry
-        if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	// Implement the logic for starting a task
+	// Parse the request JSON
+	var entry TimeEntry
+	if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        // get the user ID from the session
-        session, _ := store.Get(r, "session-name")
-        userID, ok := session.Values["userID"].(string)
-        if !ok || userID == "" {
-                http.Error(w, "Unauthorized", http.StatusUnauthorized)
-                return
-        }
+	// get the user ID from the session
+	session, _ := store.Get(r, "session-name")
+	userID, ok := session.Values["userID"].(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-        startEntry, err := startEntryForUser(entry, userID)
-        if err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	startEntry, err := startEntryForUser(entry, userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        fmt.Printf("User with ID %s started entry \"%s\"\n", userID, entry.Description)
+	fmt.Printf("User with ID %s started entry \"%s\"\n", userID, entry.Description)
 
-        // Return the created entry
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(startEntry)
+	// Return the created entry
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(startEntry)
 }
 
 func endEntry(w http.ResponseWriter, r *http.Request) {
-        // Implement the logic for ending a task
-        // Parse the request JSON
-        var entry TimeEntry
-        if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	// Implement the logic for ending a task
+	// Parse the request JSON
+	var entry TimeEntry
+	if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        // get the user ID from the session
-        session, _ := store.Get(r, "session-name")
-        userID, ok := session.Values["userID"].(string)
-        if !ok || userID == "" {
-                http.Error(w, "Unauthorized", http.StatusUnauthorized)
-                return
-        }
+	// get the user ID from the session
+	session, _ := store.Get(r, "session-name")
+	userID, ok := session.Values["userID"].(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-        endEntry, err := endEntryForUser(entry, userID)
-        if err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	endEntry, err := endEntryForUser(entry, userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        // Return the created entry
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(endEntry)
+	// Return the created entry
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(endEntry)
 }
 
 func deleteEntry(w http.ResponseWriter, r *http.Request) {
-        // Implement the logic for deleting a task
-        // Parse the request JSON
-        var entry TimeEntry
-        if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	// Implement the logic for deleting a task
+	// Parse the request JSON
+	var entry TimeEntry
+	if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        // get the user ID from the session
-        session, _ := store.Get(r, "session-name")
-        userID, ok := session.Values["userID"].(string)
-        if !ok || userID == "" {
-                http.Error(w, "Unauthorized", http.StatusUnauthorized)
-                return
-        }
+	// get the user ID from the session
+	session, _ := store.Get(r, "session-name")
+	userID, ok := session.Values["userID"].(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-        err := deleteEntryForUser(entry.ID, userID)
-        if err != nil {
-                fmt.Println("Error: ", err);
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	err := deleteEntryForUser(entry.ID, userID)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        fmt.Printf("User with ID %s deleted entry with ID \"%s\"\n", userID, entry.ID)
+	fmt.Printf("User with ID %s deleted entry with ID \"%s\"\n", userID, entry.ID)
 
-        // Return the created entry
-        //w.Header().Set("Content-Type", "application/json")
-        //json.NewEncoder(w).Encode(success)
+	// Return the created entry
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(success)
 }
 
 func getEntries(w http.ResponseWriter, r *http.Request) {
-        // parse the request JSON
-        // get the user ID from the session
-        // print out the entries for the user
+	// parse the request JSON
+	// get the user ID from the session
+	// print out the entries for the user
 
-        session, _ := store.Get(r, "session-name")
-        userID, ok := session.Values["userID"].(string)
-        if !ok || userID == "" {
-                http.Error(w, "Unauthorized", http.StatusUnauthorized)
-                return
-        }
+	session, _ := store.Get(r, "session-name")
+	userID, ok := session.Values["userID"].(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-        entries, err := getEntriesForUser(userID)
-        if err != nil {
-                http.Error(w, err.Error(), http.StatusBadRequest)
-                return
-        }
+	entries, err := getEntriesForUser(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-        // Return the created entrys as JSON
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(entries)
+	// Return the created entrys as JSON
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(entries)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-        session, _ := store.Get(r, "session-name")
-        session.Values["userID"] = ""
-        session.Save(r, w)
-        // Redirect to the login page or any other desired location
+	session, _ := store.Get(r, "session-name")
+	session.Values["userID"] = ""
+	session.Save(r, w)
+	// Redirect to the login page or any other desired location
 }
 
 func handleApp(w http.ResponseWriter, r *http.Request) {
-        if r.URL.Path != "/" {
-                http.NotFound(w, r)
-                return
-        }
-        fp := filepath.Join("app", "index.html")
-        http.ServeFile(w, r, fp)
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	fp := filepath.Join("app", "index.html")
+	http.ServeFile(w, r, fp)
 }
 
 func handleTurtle(w http.ResponseWriter, r *http.Request) {
