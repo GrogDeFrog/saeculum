@@ -18,9 +18,6 @@ func main() {
 	config.Load()
 
 	r := chi.NewRouter()
-	r.Use(chimw.RequestID)
-	r.Use(chimw.RealIP)
-	r.Use(chimw.Logger)
 	r.Use(chimw.Recoverer)
 	r.Use(chimw.Timeout(30 * time.Second))
 

@@ -20,7 +20,7 @@ func DB() *gorm.DB {
 	once.Do(func() {
 		var err error
 		db, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Info),
+			Logger: logger.Default.LogMode(logger.Error),
 		})
 		if err != nil {
 			log.Fatalf("cannot open database: %v", err)
