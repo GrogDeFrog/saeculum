@@ -8,10 +8,8 @@ export const dom = {
 
   pageNumber:          document.getElementById('pageNumber'),
 
-  startButton:         document.getElementById('start-button'),
-  endButton:           document.getElementById('end-button'),
-  loginButton:         document.getElementById('login-button'),
-  logoutButton:        document.getElementById('logout-button'),
+  taskButton:          document.getElementById('task-button'),
+  authButton:          document.getElementById('auth-button'),
 
   pageFirstButton:     document.getElementById('page-first'),
   pageBackButton:      document.getElementById('page-back'),

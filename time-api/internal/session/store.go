@@ -1,21 +1,32 @@
 package session
 
 import (
-    "time-api/internal/config"
+	"net/http"
+	"sync"
 
-    "github.com/gorilla/sessions"
+	"time-api/internal/config"
+
+	"github.com/gorilla/sessions"
 )
 
-var store *sessions.CookieStore
+var (
+	store sessions.Store
+	once  sync.Once
+)
 
-func Store() *sessions.CookieStore {
-    if store == nil {
-        cfg := config.Load()
-        store = sessions.NewCookieStore(cfg.SessionKey)
-        store.Options.HttpOnly = true
-        store.Options.SameSite = 3 // SameSite=Lax
-        store.Options.Path = "/"
-        store.Options.MaxAge = 60 * 60 * 24 * 30 // 30 days
-    }
-    return store
+func Store() sessions.Store {
+	once.Do(func() {
+		cfg := config.Load()
+		cs := sessions.NewCookieStore(cfg.SessionKey)
+
+		cs.Options = &sessions.Options{
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+			MaxAge:   0,
+		}
+		store = cs
+	})
+	return store
 }

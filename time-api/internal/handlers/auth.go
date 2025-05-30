@@ -1,84 +1,149 @@
 package handlers
 
 import (
-    "context"
-    "encoding/json"
-    "net/http"
-    "time-api/internal/config"
-    "time-api/internal/database"
-    "time-api/internal/models"
-    "time-api/internal/session"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"io"
+	"log"
+	"net/http"
+	"time"
 
-    "github.com/go-chi/chi/v5"
-    "golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
+	"time-api/internal/config"
+	"time-api/internal/database"
+	"time-api/internal/models"
+	"time-api/internal/session"
+
+	"github.com/go-chi/chi/v5"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"gorm.io/gorm"
 )
 
-func AuthRoutes(cfg config.Config) http.Handler {
-    r := chi.NewRouter()
-    oauthCfg := &oauth2.Config{
-        ClientID:     cfg.GoogleClientID,
-        ClientSecret: cfg.GoogleClientSecret,
-        RedirectURL:  cfg.OauthRedirectURL,
-        Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-        Endpoint:     google.Endpoint,
-    }
-    const state = "csrf"
+var googleCfg *oauth2.Config
 
-    r.Get("/login", func(w http.ResponseWriter, _ *http.Request) {
-        url := oauthCfg.AuthCodeURL(state, oauth2.AccessTypeOnline)
-        http.Redirect(w, nil, url, http.StatusTemporaryRedirect)
-    })
+func init() {
+	app := config.Load()
+	googleCfg = &oauth2.Config{
+		ClientID:     app.GoogleClientID,
+		ClientSecret: app.GoogleClientSecret,
+		RedirectURL:  app.GoogleRedirectURL,
+		Scopes:       []string{"openid", "profile", "email"},
+		Endpoint:     google.Endpoint,
+	}
+}
 
-    r.Get("/callback", func(w http.ResponseWriter, r *http.Request) {
-        if r.URL.Query().Get("state") != state {
-            http.Error(w, "invalid oauth state", http.StatusBadRequest)
-            return
-        }
-        tok, err := oauthCfg.Exchange(context.Background(), r.URL.Query().Get("code"))
-        if err != nil {
-            http.Error(w, "exchange failed", http.StatusBadRequest)
-            return
-        }
-        resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + tok.AccessToken)
-        if err != nil || resp.StatusCode != http.StatusOK {
-            http.Error(w, "userinfo request failed", http.StatusBadRequest)
-            return
-        }
-        defer resp.Body.Close()
-        var g struct {
-            ID            string `json:"id"`
-            Email         string `json:"email"`
-            VerifiedEmail bool   `json:"verified_email"`
-            Picture       string `json:"picture"`
-        }
-        if err := json.NewDecoder(resp.Body).Decode(&g); err != nil {
-            http.Error(w, "decode failed", http.StatusBadRequest)
-            return
-        }
+func AuthRoutes() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/login", login)
+	r.Get("/callback", callback)
+	r.Get("/logout", logout)
+	return r
+}
 
-        db := database.DB()
-        var u models.User
-        db.FirstOrCreate(&u, models.User{GoogleID: g.ID})
-        db.Model(&u).Updates(models.User{
-            Email:         g.Email,
-            VerifiedEmail: g.VerifiedEmail,
-            Picture:       g.Picture,
-        })
+const (
+	sessionName     = "session"
+	stateKey        = "oauth_state"
+	stateExpKey     = "oauth_state_exp"
+	userIDSession   = "user_id"
+	stateTTLMinutes = 10
+)
 
-        sess, _ := session.Store().Get(r, "sess")
-        sess.Values["uid"] = u.ID
-        _ = sess.Save(r, w)
+func login(w http.ResponseWriter, r *http.Request) {
+	sess, err := session.Store().Get(r, sessionName)
+	if err != nil {
+		log.Printf("could not get session: %v", err)
+	}
 
-        http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-    })
+	var nonce [32]byte
+	if _, err := rand.Read(nonce[:]); err != nil {
+		http.Error(w, "could not start login", http.StatusInternalServerError)
+		return
+	}
+	state := base64.RawURLEncoding.EncodeToString(nonce[:])
 
-    r.Get("/logout", func(w http.ResponseWriter, r *http.Request) {
-        sess, _ := session.Store().Get(r, "sess")
-        sess.Values["uid"] = uint(0)
-        _ = sess.Save(r, w)
-        w.WriteHeader(http.StatusNoContent)
-    })
+	sess.Values[stateKey] = state
+	sess.Values[stateExpKey] = time.Now().Add(stateTTLMinutes * time.Minute).Unix()
+	_ = sess.Save(r, w)
 
-    return r
+	http.Redirect(
+		w, r,
+		googleCfg.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce),
+		http.StatusTemporaryRedirect,
+	)
+}
+
+func callback(w http.ResponseWriter, r *http.Request) {
+	sess, _ := session.Store().Get(r, sessionName)
+
+	// CSRF / state validation
+	storedState, ok := sess.Values[stateKey].(string)
+	expUnix, expOK := sess.Values[stateExpKey].(int64)
+	delete(sess.Values, stateKey)
+	delete(sess.Values, stateExpKey)
+
+	if !ok || !expOK || r.URL.Query().Get("state") != storedState || time.Now().Unix() > expUnix {
+		_ = sess.Save(r, w)
+		http.Error(w, "invalid state", http.StatusBadRequest)
+		return
+	}
+
+	// Token exchange
+	code := r.URL.Query().Get("code")
+	token, err := googleCfg.Exchange(r.Context(), code)
+	if err != nil {
+		http.Error(w, "token exchange failed", http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch userinfo
+	resp, err := googleCfg.Client(r.Context(), token).
+		Get("https://openidconnect.googleapis.com/v1/userinfo")
+	if err != nil {
+		http.Error(w, "failed fetching userinfo", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	var ui struct {
+		Sub   string `json:"sub"`
+		Email string `json:"email"`
+	}
+	body, _ := io.ReadAll(resp.Body)
+	if err := json.Unmarshal(body, &ui); err != nil || ui.Sub == "" {
+		http.Error(w, "invalid userinfo", http.StatusInternalServerError)
+		return
+	}
+
+	// Upsert user
+	db := database.DB()
+	var user models.User
+	switch err := db.Where("google_id = ?", ui.Sub).First(&user).Error; {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		user = models.User{GoogleID: ui.Sub, Email: ui.Email}
+		if err := db.Create(&user).Error; err != nil {
+			http.Error(w, "cannot create user", http.StatusInternalServerError)
+			return
+		}
+	case err != nil:
+		http.Error(w, "db error", http.StatusInternalServerError)
+		return
+	default:
+		if ui.Email != "" && ui.Email != user.Email {
+			_ = db.Model(&user).Update("email", ui.Email).Error
+		}
+	}
+
+	sess.Values[userIDSession] = user.ID
+	_ = sess.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	sess, _ := session.Store().Get(r, sessionName)
+	sess.Options.MaxAge = -1
+	_ = sess.Save(r, w)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

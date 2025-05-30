@@ -1,31 +1,34 @@
 package middleware
 
 import (
-    "context"
-    "net/http"
+	"context"
+	"net/http"
 
-    "github.com/gorilla/sessions"
+	"time-api/internal/session"
 )
 
-type contextKey string
+type ctxKey string
 
-const userIDKey contextKey = "uid"
+const userIDKey ctxKey = "user_id"
 
-func SessionAuth(store *sessions.CookieStore) func(http.Handler) http.Handler {
-    return func(next http.Handler) http.Handler {
-        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            sess, _ := store.Get(r, "sess")
-            id, _ := sess.Values["uid"].(uint)
-            if id == 0 {
-                http.Error(w, "unauthorized", http.StatusUnauthorized)
-                return
-            }
-            ctx := context.WithValue(r.Context(), userIDKey, id)
-            next.ServeHTTP(w, r.WithContext(ctx))
-        })
-    }
+// Rejects requests without a valid logged-in session and injects the user-ID
+// into request context.
+func SessionAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		sess, _ := session.Store().Get(r, "session")
+		rawID, ok := sess.Values["user_id"]
+		uid, typeOK := rawID.(uint)
+		if !ok || !typeOK || uid == 0 {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+		ctx := context.WithValue(r.Context(), userIDKey, uid)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
-func UID(r *http.Request) uint {
-    return r.Context().Value(userIDKey).(uint)
+// UserID extracts the authenticated user’s ID from context.
+func UserID(r *http.Request) (uint, bool) {
+	uid, ok := r.Context().Value(userIDKey).(uint)
+	return uid, ok
 }

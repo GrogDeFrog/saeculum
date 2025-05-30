@@ -8,17 +8,10 @@ import (
 
 type TimeEntry struct {
     gorm.Model
-    Description string
-    StartTime   time.Time
-    EndTime     time.Time
-    Duration    time.Duration
-    ProjectID   *uint
-    CategoryID  *uint
-    UserID      uint
-}
 
-type LastEntry struct {
-    gorm.Model
-    UserID      uint `gorm:"uniqueIndex"`
-    TimeEntryID uint
+    UserID      uint      `gorm:"not null;index"`
+
+    Description string    `gorm:"not null"`
+    StartTime   time.Time `gorm:"not null"`
+    EndTime     time.Time `gorm:"not null"`
 }

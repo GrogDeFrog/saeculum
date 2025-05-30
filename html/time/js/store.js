@@ -1,14 +1,16 @@
 export const store = {
+    /* paging & lists */
     numEntries: 20,
     page: 0,
-
     entries: [],
-    tasks: [],
     filteredEntries: [],
-
     highlightedIndex: -1,
 
+    /* auth & profile */
+    loggedIn: false,
+    user: null,
+
+    /* running task */
     currentEntry: null,
     currentEntryInterval: null,
 };
-

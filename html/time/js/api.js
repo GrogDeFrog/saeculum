@@ -1,25 +1,47 @@
-import { store }   from './store.js';
-import { displayEntries, displayCurrentEntry } from './render.js';
+import { store } from './store.js';
+import {
+    displayEntries,
+    startTicker,
+    stopTicker,
+    resetCurrentTaskDisplay,
+    updateAuthButton,
+    updateTaskButton,
+    ghostTextUpdate,
+} from './render.js';
+
+/* =============== PUBLIC =============== */
+
+export async function fetchUser() {
+    try {
+        const res = await fetch('/user');
+        if (res.status === 401) return setLoggedOut();
+
+        store.user     = await res.json();
+        store.loggedIn = true;
+
+        if (store.user.current_task) {
+            store.currentEntry = {
+                Description: store.user.current_task.description,
+                StartTime:   store.user.current_task.start_time,
+            };
+            startTicker();
+        } else {
+            store.currentEntry = null;
+            resetCurrentTaskDisplay();
+        }
+
+        ghostTextUpdate();
+        updateAuthButton();
+    } catch (err) {
+        console.error('fetchUser:', err);
+    }
+}
 
 export async function fetchPreviousEntries() {
     try {
-        const res  = await fetch('/api/entries');
+        const res     = await fetch('/entries');
         store.entries = await res.json();
-
-        if (store.entries.length) {
-            displayEntries(store.entries);
-            store.currentEntry = store.entries[0];
-            restartTicker();
-        } else {
-            resetCurrentTaskDisplay();
-            displayEntries([]);
-        }
-
-        // Build task-autocomplete list
-        store.entries.forEach(e => {
-            if (!store.tasks.find(t => t.Description === e.Description))
-                store.tasks.push(e);
-        });
+        displayEntries(store.entries);
     } catch (err) {
         console.error('fetchPreviousEntries:', err);
     }
@@ -27,50 +49,55 @@ export async function fetchPreviousEntries() {
 
 export async function startEntry(description) {
     try {
-        const res = await fetch('/api/start', {
+        await fetch('/entries/start', {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body   : JSON.stringify({ Description: description }),
+            body   : JSON.stringify({ description }),
         });
-        store.currentEntry = await res.json();
-        restartTicker();
-        await fetchPreviousEntries();          // refresh list
+        await Promise.all([fetchUser(), fetchPreviousEntries()]);
     } catch (err) {
         console.error('startEntry:', err);
     }
+    ghostTextUpdate();
+    updateTaskButton();
 }
 
 export async function deleteEntry(entry) {
     try {
-        await fetch('/api/delete', {
+        await fetch('/entries/delete', {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body   : JSON.stringify({ ID: entry.ID }),
+            body   : JSON.stringify({ entry_id: entry.ID }),
         });
         await fetchPreviousEntries();
     } catch (err) {
         console.error('deleteEntry:', err);
     }
+    ghostTextUpdate();
+    updateTaskButton();
 }
 
 export async function endCurrentEntry() {
     try {
-        await fetch('/api/end', { method: 'POST' });
-        await fetchPreviousEntries();
+        await fetch('/entries/end', { method: 'POST' });
+        await Promise.all([fetchUser(), fetchPreviousEntries()]);
     } catch (err) {
         console.error('endCurrentEntry:', err);
     }
+    updateTaskButton();
+    ghostTextUpdate();
 }
 
-/* internal helpers */
-function resetCurrentTaskDisplay() {
-    document.getElementById('current-task-name').textContent = 'No active task';
-    document.getElementById('current-task-duration').textContent = '';
-}
+/* =============== INTERNAL =============== */
 
-function restartTicker() {
-    if (store.currentEntryInterval) clearInterval(store.currentEntryInterval);
-    displayCurrentEntry();
-    store.currentEntryInterval = setInterval(displayCurrentEntry, 1000);
+function setLoggedOut() {
+    store.loggedIn     = false;
+    store.user         = null;
+    store.currentEntry = null;
+
+    stopTicker();
+    resetCurrentTaskDisplay();
+    updateAuthButton();
+    ghostTextUpdate();
 }
 

@@ -1,7 +1,7 @@
 services:
   frontend:
-    restart: unless-stopped
     container_name: saeculum-frontend
+    restart: unless-stopped
     image: nginx:latest
     volumes:
       - ./html:/usr/share/nginx/html/
@@ -11,13 +11,13 @@ services:
 
   backend:
     container_name: time-api
-    image: golang:1.23-alpine
     restart: unless-stopped
+    image: golang:1.24.2-bookworm
     working_dir: /app
     command: go run ./cmd/server
+    volumes:
+      - ./time-api:/app
     env_file:
       - time-api/.env
     ports:
       - "23889:23889"
-    volumes:
-      - ./time-api:/app
