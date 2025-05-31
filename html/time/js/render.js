@@ -30,13 +30,15 @@ export function displayCurrentEntry() {
     if (!e) return resetCurrentTaskDisplay();
 
     dom.currentTaskName.textContent = e.Description;
-    const elapsed = Math.floor((Date.now() - new Date(e.StartTime)) / 1000);
+    const elapsed = Math.max(0, Math.floor((Date.now() - new Date(e.StartTime)) / 1000));
     dom.currentTaskDuration.textContent = formatDuration(elapsed);
+    console.log("Displaying current entry.");
 }
 
 /* ========== AUTH BUTTON ========== */
 
 export function updateTaskButton() {
+    console.log("Task button updated.");
     dom.taskButton.textContent = !store.currentEntry || dom.searchBar.value ? 'Start' : 'End';
 }
 
@@ -64,22 +66,24 @@ export function highlightEntry(idx) {
 
     /* keep ghost text in sync */
     ghostTextUpdate();
+    updateTaskButton();
 }
 
 export function updateHighlight(direction) {
     let idx = store.highlightedIndex;
 
     if (direction === 'down') {
-        if (idx === -1 && store.filteredEntries.length)  idx = 0;
+        if (idx === -1 && store.filteredEntries.length) idx = 0;
         else if (idx < store.filteredEntries.length - 1 && idx < 19) idx++;
     } else if (direction === 'up') {
-        if (idx >= 0)                                    idx--;
+        if (idx >= 0) idx--;
     }
 
     highlightEntry(idx);
 }
 
 export function ghostTextUpdate() {
+    console.log("Ghost text updated.");
     if (store.highlightedIndex === -1) {
         if (dom.searchBar.value) {
             if (store.entries.length)

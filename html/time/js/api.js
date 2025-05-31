@@ -32,6 +32,7 @@ export async function fetchUser() {
 
         ghostTextUpdate();
         updateAuthButton();
+        updateTaskButton();
     } catch (err) {
         console.error('fetchUser:', err);
     }
@@ -84,8 +85,8 @@ export async function endCurrentEntry() {
     } catch (err) {
         console.error('endCurrentEntry:', err);
     }
-    updateTaskButton();
     ghostTextUpdate();
+    updateTaskButton();
 }
 
 /* =============== INTERNAL =============== */
@@ -99,5 +100,6 @@ function setLoggedOut() {
     resetCurrentTaskDisplay();
     updateAuthButton();
     ghostTextUpdate();
+    updateTaskButton();
 }
 

@@ -8,7 +8,6 @@ import { fuzzySearch } from './utils.js';
 /* ============  Public setup  ============ */
 
 export function setupEventListeners() {
-    updateTaskButton();
     /* Live search */
     dom.searchBar.addEventListener('input', () => {
         const q = dom.searchBar.value.trim();
