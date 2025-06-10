@@ -106,10 +106,12 @@ button:hover {
 .main-container iframe {
     display: block;
     width: 100%;
+    height: auto;
     aspect-ratio: 16 / 9;
     max-width: 100%;
     border: 0;
-}
+    padding: 1em 0em;
+}       
 
 .title-container {
     text-align: center;
