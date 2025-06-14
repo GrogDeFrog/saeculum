@@ -316,14 +316,3 @@ const TONE_FREQENCIES = {
   "A#8": 7459,
   B8: 7902,
 };
-
-module.exports = {
-  init,
-  playChord,
-  playSingleFrequency,
-  playSound,
-  playTone,
-  TONE_FREQENCIES,
-  CHORD_FREQUENCIES,
-  CHORDS,
-};
