@@ -1,22 +1,23 @@
 @font-face {
-    font-family: 'EB Garamond';
+    font-family: "EB Garamond";
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('/assets/fonts/EBGaramond-VariableFont_wght.woff2') format('woff2');
+    src: url("/assets/fonts/EBGaramond-VariableFont_wght.woff2")
+    format("woff2");
 }
 
 @font-face {
-    font-family: 'EB Garamond';
+    font-family: "EB Garamond";
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('/assets/fonts/EBGaramond-Italic-VariableFont_wght.woff2')
-    format('woff2');
+    src: url("/assets/fonts/EBGaramond-Italic-VariableFont_wght.woff2")
+    format("woff2");
 }
 
 * {
-    font-family: 'EB Garamond', serif;
+    font-family: "EB Garamond", serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -45,39 +46,49 @@ p {
     }
 }
 
-@keyframes pulse-background {
-    0%, 100% { 
-        background-color: rgb(255, 255, 255); 
+@media (max-width: 600px) {
+    body {
+        animation: none !important;
     }
-    50% { 
-        background-color: rgb(240, 240, 240); 
+}
+
+@keyframes pulse-background {
+    0%,
+    100% {
+        background-color: rgb(255, 255, 255);
+    }
+    50% {
+        background-color: rgb(240, 240, 240);
     }
 }
 
 @keyframes pulse-link-passive {
-    0%, 100% { 
-        color: rgb(120, 120, 120); 
+    0%,
+    100% {
+        color: rgb(120, 120, 120);
     }
-    50% { 
-        color: rgb(60, 60, 60); 
+    50% {
+        color: rgb(60, 60, 60);
     }
 }
 
 @keyframes pulse-link-active {
-    0%, 100% { 
-        color: rgb(160, 160, 160); 
+    0%,
+    100% {
+        color: rgb(160, 160, 160);
     }
-    50% { 
-        color: rgb(100, 100, 100); 
+    50% {
+        color: rgb(100, 100, 100);
     }
 }
 
 @keyframes pulse-button {
-    0%, 100% { 
-        background-color: rgb(240, 240, 240); 
+    0%,
+    100% {
+        background-color: rgb(240, 240, 240);
     }
-    50% { 
-        background-color: rgb(255, 255, 255); 
+    50% {
+        background-color: rgb(255, 255, 255);
     }
 }
 
@@ -168,11 +179,7 @@ button:hover {
     min-height: 100vh;
     margin: 0 auto;
     padding-top: 0;
-    padding-left: clamp(
-    20px,
-    calc(100px - 80 * ((800px - 100vw) / 600)),
-    100px
-    );
+    padding-left: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
     padding-right: clamp(
     20px,
     calc(100px - 80 * ((800px - 100vw) / 600)),
