@@ -5,6 +5,22 @@
     }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+    .task:hover,
+    #entry-list li.highlighted {
+        animation: pulse-button 1.3s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse-button {
+    0%, 100% { 
+        background-color: rgb(240, 240, 240); 
+    }
+    50% { 
+        background-color: rgb(255, 255, 255); 
+    }
+}
+
 #search-outline {
     width: 100%;
     position: relative;
@@ -100,7 +116,7 @@
 }
 
 .task:hover {
-    background-color: var(--button-color-active);
+    background-color: rgb(230, 230, 230);
     cursor: pointer;
 }
 
@@ -122,7 +138,7 @@
 }
 
 #entry-list li.highlighted {
-    background-color: var(--button-color-active);
+    background-color: rgb(230, 230, 230);
 }
 
 #entry-list li:hover {

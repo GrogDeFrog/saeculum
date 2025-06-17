@@ -1,17 +1,18 @@
 @font-face {
-  font-family: 'EB Garamond';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/assets/fonts/EBGaramond-VariableFont_wght.woff2') format('woff2');
+    font-family: 'EB Garamond';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/EBGaramond-VariableFont_wght.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'EB Garamond';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/assets/fonts/EBGaramond-Italic-VariableFont_wght.woff2') format('woff2');
+    font-family: 'EB Garamond';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/EBGaramond-Italic-VariableFont_wght.woff2')
+    format('woff2');
 }
 
 * {
@@ -25,8 +26,63 @@ p {
     padding-bottom: 1em;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+    body {
+        animation: pulse-background 30s ease-in-out infinite;
+    }
+
+    span,
+    a:not(#main-title):not(:hover) {
+        animation: pulse-link-passive 3s ease-in-out infinite;
+    }
+
+    a:hover {
+        animation: pulse-link-active 1.5s ease-in-out infinite;
+    }
+
+    button:hover {
+        animation: pulse-button 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse-background {
+    0%, 100% { 
+        background-color: rgb(255, 255, 255); 
+    }
+    50% { 
+        background-color: rgb(240, 240, 240); 
+    }
+}
+
+@keyframes pulse-link-passive {
+    0%, 100% { 
+        color: rgb(120, 120, 120); 
+    }
+    50% { 
+        color: rgb(60, 60, 60); 
+    }
+}
+
+@keyframes pulse-link-active {
+    0%, 100% { 
+        color: rgb(160, 160, 160); 
+    }
+    50% { 
+        color: rgb(100, 100, 100); 
+    }
+}
+
+@keyframes pulse-button {
+    0%, 100% { 
+        background-color: rgb(240, 240, 240); 
+    }
+    50% { 
+        background-color: rgb(255, 255, 255); 
+    }
+}
+
 body {
-    background-color: var(--background-color, rgb(255, 255, 255));
+    background-color: rgb(255, 255, 255);
 }
 
 h1 {
@@ -70,8 +126,9 @@ li {
     padding-left: 1em;
 }
 
-span, a {
-    color: var(--link-color-passive, rgb(20, 20, 20));
+span,
+a {
+    color: rgb(20, 20, 20);
 }
 
 a {
@@ -80,7 +137,7 @@ a {
 }
 
 a:hover {
-    color: var(--link-color-active, rgb(60, 60, 60));
+    color: rgb(60, 60, 60);
 }
 
 #main-title {
@@ -89,22 +146,21 @@ a:hover {
 }
 
 #main-title:hover {
-    color: var(--link-color-active, rgb(60, 60, 60));
+    color: rgb(60, 60, 60);
 }
 
 button {
     background-color: white;
     border: none;
-    padding: 0.5em; 
+    padding: 0.5em;
     color: #000;
     font-size: 100%;
     z-index: 3;
 }
 
 button:hover {
-    background-color: var(--button-color-active, rgb(230, 230, 230));
+    background-color: rgb(230, 230, 230);
     cursor: pointer;
-    /*color: var(--link-color-active, rgb(60, 60, 60));*/
 }
 
 .main-container {
@@ -112,9 +168,16 @@ button:hover {
     min-height: 100vh;
     margin: 0 auto;
     padding-top: 0;
-    padding-left: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
-    padding-right: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
-    /*padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);*/
+    padding-left: clamp(
+    20px,
+    calc(100px - 80 * ((800px - 100vw) / 600)),
+    100px
+    );
+    padding-right: clamp(
+    20px,
+    calc(100px - 80 * ((800px - 100vw) / 600)),
+    100px
+    );
     padding-bottom: 0;
     background-color: white;
 }
@@ -127,7 +190,7 @@ button:hover {
     max-width: 100%;
     border: 0;
     padding: 1em 0em;
-}       
+}
 
 .title-container {
     text-align: center;
