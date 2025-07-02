@@ -1,7 +1,6 @@
 export const store = {
     /* paging & lists */
     numEntries: 20,
-    page: 0,
     entries: [],
     filteredEntries: [],
     highlightedIndex: -1,

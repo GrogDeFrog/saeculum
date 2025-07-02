@@ -112,12 +112,7 @@ export function displayEntries(list) {
         return;
     }
 
-    const slice = list.slice(
-        store.numEntries * store.page,
-        store.numEntries * (store.page + 1),
-    );
-
-    slice.forEach((entry, idx) => {
+    list.forEach((entry, idx) => {
         const li  = document.createElement('li');
         li.dataset.index = idx;
 

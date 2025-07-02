@@ -181,8 +181,10 @@ button:hover {
     padding-top: 0;
     padding-left: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
     padding-right: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
-    padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 100px);
+    padding-bottom: clamp(20px, calc(100px - 80 * ((800px - 100vw) / 600)), 50px);
     background-color: white;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-container iframe {

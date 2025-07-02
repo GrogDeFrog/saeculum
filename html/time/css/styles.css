@@ -98,14 +98,15 @@
     align: right;
 }
 
-#current-task {
-    /* ... */
+.main-container {
+    height: 100vh !important;
 }
 
 #task-container {
-    height: calc(20 * 37px + 2px);
     overflow-y: auto;
     border: 1px solid #000;
+    flex: 1;
+    min-height: 0;
 }
 
 .task {
