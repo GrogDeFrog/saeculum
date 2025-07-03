@@ -1,6 +1,6 @@
 # Saeculum
 
-In this repo (created by [George](github.com/GrogDeFrog) and [Dylan](github.com/dleiferives)) is the source code for [Saeculum](https://www.saeculum.net)'s frontend and backend.
+In this repo (created by [George](https://github.com/GrogDeFrog) and [Dylan](https://github.com/dleiferives)) is the source code for [Saeculum](https://www.saeculum.net)'s frontend and backend.
 
 ![image](https://github.com/user-attachments/assets/0a72842c-be6e-42f4-9572-2cc4b1b24618)
 
