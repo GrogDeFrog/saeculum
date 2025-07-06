@@ -27,5 +27,10 @@ services:
       - time-api/.env
     ports:
       - "23889:23889"
+    volumes:
+      - ./data:/data
     networks:
       - saeculum
+
+volumes:
+  data:

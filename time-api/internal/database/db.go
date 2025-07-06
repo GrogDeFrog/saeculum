@@ -19,7 +19,7 @@ var (
 func DB() *gorm.DB {
 	once.Do(func() {
 		var err error
-		db, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{
+		db, err = gorm.Open(sqlite.Open("/data/time.db"), &gorm.Config{
 			Logger: logger.Default.LogMode(logger.Error),
 		})
 		if err != nil {
